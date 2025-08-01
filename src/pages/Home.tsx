@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useTheme } from "../contexts/ThemeContext";
 import { Product } from "../types/theme";
-import { apiService, ApiError } from "../services/api";
+import { apiService } from "../services/api";
 import ProductCard from "../components/ProductCard";
 import Sidebar from "../components/Sidebar";
 import {
@@ -10,8 +10,6 @@ import {
   getTitleStyles,
   getSubtitleStyles,
   getGridStyles,
-  getLoadingStyles,
-  getErrorStyles,
   getButtonStyles,
   getCardStyles,
   getHeadingStyles,
@@ -22,23 +20,19 @@ const Home: React.FC = () => {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [visibleProducts, setVisibleProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [productsToShow, setProductsToShow] = useState(12);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        setError(null);
+        setFetchError(null);
         const data = await apiService.fetchProducts();
         setAllProducts(data);
         setVisibleProducts(data.slice(0, productsToShow));
       } catch (err) {
-        if (err instanceof ApiError) {
-          setError(err.message);
-        } else {
-          setError("An unexpected error occurred");
-        }
+        setFetchError("Failed to load products. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -54,6 +48,25 @@ const Home: React.FC = () => {
 
   // Always render Hero and Features sections, only grid is affected by loading
   const skeletons = Array.from({ length: 12 });
+
+  if (fetchError) {
+    return (
+      <div className={getContainerStyles(theme)}>
+        {theme.layout.type === "sidebar" && <Sidebar />}
+        <div className={getContentStyles(theme)}>
+          <div className="flex flex-col items-center justify-center min-h-[300px]">
+            <h2 className="text-2xl font-bold mb-4 text-red-600">{fetchError}</h2>
+            <button
+              className={getButtonStyles(theme)}
+              onClick={() => window.location.reload()}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={getContainerStyles(theme)}>

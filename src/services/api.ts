@@ -1,6 +1,5 @@
 import { Product } from "../types/theme";
-
-const API_BASE_URL = "https://dummyjson.com";
+import { API_CONSTANTS } from "../constants/api";
 
 export class ApiError extends Error {
   constructor(message: string, public status?: number) {
@@ -12,7 +11,7 @@ export class ApiError extends Error {
 export const apiService = {
   async fetchProducts(): Promise<Product[]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/products`);
+      const response = await fetch(`${API_CONSTANTS.BASE_URL}/products`);
       if (!response.ok) {
         throw new ApiError(
           `HTTP error! status: ${response.status}`,
@@ -30,7 +29,7 @@ export const apiService = {
 
   async fetchProductById(id: number): Promise<Product> {
     try {
-      const response = await fetch(`${API_BASE_URL}/products/${id}`);
+      const response = await fetch(`${API_CONSTANTS.BASE_URL}/products/${id}`);
       if (!response.ok) {
         throw new ApiError(
           `HTTP error! status: ${response.status}`,
@@ -49,7 +48,7 @@ export const apiService = {
   async fetchProductsByCategory(category: string): Promise<Product[]> {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/products/category/${encodeURIComponent(category)}`
+        `${API_CONSTANTS.BASE_URL}/products/category/${encodeURIComponent(category)}`
       );
       if (!response.ok) {
         throw new ApiError(
@@ -59,7 +58,7 @@ export const apiService = {
       }
 
       const data = await response.json();
-      return data.products as Product[]; // <-- note: .products
+      return data.products as Product[];
     } catch (error: unknown) {
       if (error instanceof ApiError) throw error;
       throw new ApiError("Failed to fetch products by category");
