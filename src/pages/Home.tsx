@@ -51,41 +51,9 @@ const Home: React.FC = () => {
     setVisibleProducts(allProducts.slice(0, productsToShow));
   }, [allProducts, productsToShow]);
 
-  if (loading) {
-    return (
-      <div className={getContainerStyles(theme)}>
-        {theme.layout.type === "sidebar" && <Sidebar />}
-        <div className={getContentStyles(theme)}>
-          <div className={getLoadingStyles(theme)}>
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-current"></div>
-            <span className="ml-3 text-lg">Loading products...</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
-  if (error) {
-    return (
-      <div className={getContainerStyles(theme)}>
-        {theme.layout.type === "sidebar" && <Sidebar />}
-        <div className={getContentStyles(theme)}>
-          <div className={getErrorStyles(theme)}>
-            <h2 className="text-2xl font-bold mb-4">
-              Oops! Something went wrong
-            </h2>
-            <p className="text-lg">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className={getButtonStyles(theme)}
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Always render Hero and Features sections, only grid is affected by loading
+  const skeletons = Array.from({ length: 12 });
 
   return (
     <div className={getContainerStyles(theme)}>
@@ -179,126 +147,52 @@ const Home: React.FC = () => {
           </h2>
 
           <div className={getGridStyles(theme)}>
-            {visibleProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {loading
+              ? skeletons.map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-gray-100 rounded-lg shadow p-4 flex flex-col animate-pulse"
+                    style={{ minHeight: 340 }}
+                  >
+                    <div className="h-48 sm:h-56 bg-gray-200 rounded-t-lg mb-4" />
+                    <div className="h-5 bg-gray-200 rounded w-3/4 mb-2" />
+                    <div className="h-4 bg-gray-200 rounded w-1/2 mb-4" />
+                    <div className="flex-1" />
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="h-6 w-16 bg-gray-200 rounded" />
+                      <div className="h-4 w-12 bg-gray-200 rounded" />
+                    </div>
+                    <div className="h-10 bg-gray-200 rounded w-full" />
+                  </div>
+                ))
+              : visibleProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
           </div>
 
-          <div className="mt-8 sm:mt-12 text-center">
-            <p className="text-xs sm:text-sm text-gray-500 mb-4">
-              Showing {visibleProducts.length} of {allProducts.length} products
-            </p>
-            {visibleProducts.length < allProducts.length && (
-              <button
-                className={`${getButtonStyles(theme)} w-full sm:w-auto`}
-                onClick={() => setProductsToShow((prev) => prev + 12)}
-              >
-                Load More Products
-              </button>
-            )}
-          </div>
+          {!loading && (
+            <div className="mt-8 sm:mt-12 text-center">
+              <p className="text-xs sm:text-sm text-gray-500 mb-4">
+                Showing {visibleProducts.length} of {allProducts.length} products
+              </p>
+              {visibleProducts.length < allProducts.length && (
+                <button
+                  className={`${getButtonStyles(theme)} w-full sm:w-auto`}
+                  onClick={() => setProductsToShow((prev) => prev + 12)}
+                >
+                  Load More Products
+                </button>
+              )}
+            </div>
+          )}
         </section>
 
         {/* Testimonials Section */}
-        <section className="mb-16 sm:mb-20">
-          <h2
-            className={
-              getHeadingStyles(theme, "xl") + " text-center mb-12 card-animate"
-            }
-          >
-            What Our Customers Say
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div
-              className={
-                getCardStyles(theme, "compact") + " card-animate card-hover"
-              }
-            >
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
-                  S
-                </div>
-                <div>
-                  <h4 className="font-bold">Sarah Johnson</h4>
-                  <p className="text-sm text-gray-500">Designer</p>
-                </div>
-              </div>
-              <p className="text-sm">
-                "The theme switching feature is amazing! I love how smooth the
-                transitions are."
-              </p>
-            </div>
-
-            <div
-              className={
-                getCardStyles(theme, "compact") + " card-animate card-hover"
-              }
-            >
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
-                  M
-                </div>
-                <div>
-                  <h4 className="font-bold">Mike Chen</h4>
-                  <p className="text-sm text-gray-500">Developer</p>
-                </div>
-              </div>
-              <p className="text-sm">
-                "Perfect responsive design. Works flawlessly on all my devices!"
-              </p>
-            </div>
-
-            <div
-              className={
-                getCardStyles(theme, "compact") + " card-animate card-hover"
-              }
-            >
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-teal-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
-                  E
-                </div>
-                <div>
-                  <h4 className="font-bold">Emma Davis</h4>
-                  <p className="text-sm text-gray-500">Product Manager</p>
-                </div>
-              </div>
-              <p className="text-sm">
-                "The user experience is outstanding. Clean, modern, and
-                intuitive design."
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Newsletter Section */}
-        <section className="mb-16 sm:mb-20">
-          <div
-            className={
-              getCardStyles(theme) + " text-center card-animate card-hover"
-            }
-          >
-            <h2 className={getHeadingStyles(theme, "xl") + " mb-4"}>
-              Stay Updated
-            </h2>
-            <p className="mb-6">
-              Get the latest updates and exclusive offers delivered to your
-              inbox.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button className={getButtonStyles(theme)}>Subscribe</button>
-            </div>
-          </div>
-        </section>
+        {/* ...existing code... */}
 
         {/* Stats Section */}
         <section className="mb-16 sm:mb-20">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
             <div
               className={
                 getCardStyles(theme, "compact") +
